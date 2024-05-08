@@ -5,10 +5,11 @@ class Platformer extends Phaser.Scene {
 
     init() {
         // variables and settings
-        this.ACCELERATION = 500;
-        this.DRAG = 700;    // DRAG < ACCELERATION = icy slide
-        this.physics.world.gravity.y = 1500;
-        this.JUMP_VELOCITY = -900;
+        this.ACCELERATION = 5000;
+        this.DRAG = 7000;    // DRAG < ACCELERATION = icy slide
+        this.physics.world.gravity.y = 2000;
+        this.JUMP_VELOCITY = -1000;
+        this.MAX_SPEED = 350;
     }
 
     create() {
@@ -46,23 +47,32 @@ class Platformer extends Phaser.Scene {
             this.physics.world.debugGraphic.clear()
         }, this);
 
+        this.input.keyboard.on('keydown-R', () => {
+            this.scene.start("platformerScene");
+        }, this);
     }
 
     update() {
         if(cursors.left.isDown) {
             // TODO: have the player accelerate to the left
+            my.sprite.player.body.setAccelerationX(-this.ACCELERATION);
+            if(my.sprite.player.body.velocity.x < -this.MAX_SPEED) my.sprite.player.setVelocity(-this.MAX_SPEED,my.sprite.player.body.velocity.y);
             
             my.sprite.player.resetFlip();
             my.sprite.player.anims.play('walk', true);
 
         } else if(cursors.right.isDown) {
             // TODO: have the player accelerate to the right
+            my.sprite.player.body.setAccelerationX(this.ACCELERATION);
+            if(my.sprite.player.body.velocity.x > this.MAX_SPEED) my.sprite.player.setVelocity(this.MAX_SPEED,my.sprite.player.body.velocity.y);
 
             my.sprite.player.setFlip(true, false);
             my.sprite.player.anims.play('walk', true);
 
         } else {
             // TODO: set acceleration to 0 and have DRAG take over
+            my.sprite.player.body.setAccelerationX(0);
+            my.sprite.player.body.setDragX(this.DRAG);
 
             my.sprite.player.anims.play('idle');
         }
@@ -74,6 +84,7 @@ class Platformer extends Phaser.Scene {
         }
         if(my.sprite.player.body.blocked.down && Phaser.Input.Keyboard.JustDown(cursors.up)) {
             // TODO: set a Y velocity to have the player "jump" upwards (negative Y direction)
+            my.sprite.player.body.setVelocityY(this.JUMP_VELOCITY);
 
         }
     }
