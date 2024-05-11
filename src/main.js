@@ -30,12 +30,12 @@ let config = {
         }
     },
     width: 1440,
-    height: 900,
+    height: 400,
     scene: [Load, Platformer]
 }
 
 var cursors;
-const SCALE = 2.0;
+const SCALE = 1.0;
 var my = {sprite: {}, text: {}};
 
 const game = new Phaser.Game(config);

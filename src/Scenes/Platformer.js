@@ -5,31 +5,41 @@ class Platformer extends Phaser.Scene {
 
     init() {
         // variables and settings
-        this.ACCELERATION = 5000;
-        this.DRAG = 7000;    // DRAG < ACCELERATION = icy slide
-        this.physics.world.gravity.y = 2000;
-        this.JUMP_VELOCITY = -1000;
-        this.MAX_SPEED = 350;
+        this.ACCELERATION = 3500*SCALE;
+        this.DRAG = 3500*SCALE;    // DRAG < ACCELERATION = icy slide
+        this.physics.world.gravity.y = 1000*SCALE;
+        this.JUMP_VELOCITY = -500*SCALE;
+        this.MAX_SPEED = 175*SCALE;
     }
 
     create() {
         // Create a new tilemap game object which uses 18x18 pixel tiles, and is
         // 45 tiles wide and 25 tiles tall.
-        this.map = this.add.tilemap("platformer-level-1", 18, 18, 45, 25);
+        // this.map = this.add.tilemap("platformer-level-1", 18, 18, 45, 25);
 
         // Add a tileset to the map
         // First parameter: name we gave the tileset in Tiled
         // Second parameter: key for the tilesheet (from this.load.image in Load.js)
-        this.tileset = this.map.addTilesetImage("kenny_tilemap_packed", "tilemap_tiles");
+        // this.tileset = this.map.addTilesetImage("kenny_tilemap_packed", "tilemap_tiles");
+        
+        this.map = this.add.tilemap("dungeontileset", 16, 16, 80, 25);
+        this.tileset = this.map.addTilesetImage("dungeontileset", "DungeonTileSet");
 
         // Create a layer
-        this.groundLayer = this.map.createLayer("Ground-n-Platforms", this.tileset, 0, 0);
-        this.groundLayer.setScale(2.0);
+        // this.groundLayer = this.map.createLayer("Ground-n-Platforms", this.tileset, 0, 0);
+        
+        this.bgLayer = this.map.createLayer("background", this.tileset, 0, 0);
+        this.bgLayer.setScale(SCALE);
+        this.groundLayer = this.map.createLayer("ground", this.tileset, 0, 0);
+        this.groundLayer.setScale(SCALE);
+        this.propsLayer = this.map.createLayer("props", this.tileset, 0, 0);
+        this.propsLayer.setScale(SCALE);
 
         // Make it collidable
         this.groundLayer.setCollisionByProperty({
             collides: true
         });
+
 
         // set up player avatar
         my.sprite.player = this.physics.add.sprite(game.config.width/4, game.config.height/2, "platformer_characters", "tile_0000.png").setScale(SCALE)
@@ -86,6 +96,12 @@ class Platformer extends Phaser.Scene {
             // TODO: set a Y velocity to have the player "jump" upwards (negative Y direction)
             my.sprite.player.body.setVelocityY(this.JUMP_VELOCITY);
 
+        }
+
+        console.log(this.propsLayer.getTileAtWorldXY(my.sprite.player.x,my.sprite.player.y));
+        var propTile = this.propsLayer.getTileAtWorldXY(my.sprite.player.x,my.sprite.player.y);
+        if(propTile != null && propTile.properties.death){
+            this.scene.start("platformerScene");
         }
     }
 }
